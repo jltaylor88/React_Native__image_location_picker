@@ -1,23 +1,27 @@
 import React, {useMemo} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
 import {Colors} from '../../constants/colors';
 
 export interface IImageCardProps {
+  loading?: boolean;
   imageUri?: string;
   placeholderText: string;
 }
 
 export default function ImageCard({
   imageUri,
+  loading,
   placeholderText,
 }: IImageCardProps): JSX.Element {
   let InnerJSX: JSX.Element = useMemo(() => {
-    if (!imageUri) {
+    if (loading) {
+      return <ActivityIndicator size="large" color={Colors.primary500} />;
+    } else if (!imageUri) {
       return <Text style={styles.placeholderText}>{placeholderText}</Text>;
     } else {
       return <Image style={styles.cardImage} source={{uri: imageUri}} />;
     }
-  }, [imageUri, placeholderText]);
+  }, [imageUri, loading, placeholderText]);
 
   return <View style={styles.card}>{InnerJSX}</View>;
 }

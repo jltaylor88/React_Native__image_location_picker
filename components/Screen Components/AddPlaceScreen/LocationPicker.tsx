@@ -1,5 +1,5 @@
 import VerticalPadding from './VerticalPadding';
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
   Alert,
   PermissionsAndroid,
@@ -24,6 +24,7 @@ export default function LocationPicker({
   onChange,
   value,
 }: ILocationPickerProps): JSX.Element {
+  const [loading, setLoading] = useState(false);
   const {navigate} = useNavigation<NavigationProp<RootStackParams>>();
 
   const handleLocateUser = useCallback(
@@ -32,6 +33,7 @@ export default function LocationPicker({
     }: {
       onSuccess: (location: Geolocation.GeoPosition) => void;
     }): Promise<void> => {
+      setLoading(true);
       // Check if the user has granted permission
       try {
         const granted: PermissionStatus = await PermissionsAndroid.request(
@@ -61,6 +63,8 @@ export default function LocationPicker({
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     },
     [],
@@ -99,6 +103,7 @@ export default function LocationPicker({
     <>
       <VerticalPadding>
         <ImageCard
+          loading={loading}
           imageUri={imageURI}
           placeholderText="No location picked yet"
         />
