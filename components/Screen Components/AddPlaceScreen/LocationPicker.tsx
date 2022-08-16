@@ -1,12 +1,6 @@
 import VerticalPadding from './VerticalPadding';
 import React, {useCallback, useMemo, useState} from 'react';
-import {
-  Alert,
-  PermissionsAndroid,
-  PermissionStatus,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Alert, PermissionsAndroid, StyleSheet, View} from 'react-native';
 import ImageCard from '../../ui/ImageCard';
 import OutlineButton from '../../ui/OutlineButton';
 import Geolocation from 'react-native-geolocation-service';
@@ -36,7 +30,7 @@ export default function LocationPicker({
       setLoading(true);
       // Check if the user has granted permission
       try {
-        const granted: PermissionStatus = await PermissionsAndroid.request(
+        await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
             title: 'Location Permission',
@@ -49,18 +43,33 @@ export default function LocationPicker({
           },
         );
 
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          // Access the user's geolocation
-          Geolocation.getCurrentPosition(
-            position => {
-              onSuccess(position);
-            },
-            error => {
-              Alert.alert(String(error));
-            },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        const fineGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        const coarseGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+        );
+
+        console.log('FINE: ', fineGranted);
+        console.log('COARSE: ', coarseGranted);
+
+        if (!fineGranted && !coarseGranted) {
+          Alert.alert(
+            "Cannot proceed without accessing the device's location.",
+            'Please grant this permission in settings and try again. ',
           );
         }
+
+        // Access the user's geolocation
+        Geolocation.getCurrentPosition(
+          position => {
+            onSuccess(position);
+          },
+          error => {
+            Alert.alert(String(error));
+          },
+          {enableHighAccuracy: fineGranted, timeout: 15000, maximumAge: 10000},
+        );
       } catch (error) {
         console.error(error);
       } finally {

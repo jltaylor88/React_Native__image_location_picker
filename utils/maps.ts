@@ -1,6 +1,6 @@
 import axios, {AxiosResponse} from 'axios';
 
-export const GOOGLE_MAP_KEY = 'AIzaSyDBb6l9LYR9kJNpk1Qgk63PzJw1j-9Vwgg';
+export const GOOGLE_MAP_KEY = '';
 
 export const getStaticMapURL = (lat: number, lng: number): string => {
   return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
