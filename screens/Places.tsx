@@ -59,8 +59,6 @@ export default function Places({
     fetchItems();
   }, []);
 
-  console.log(places);
-
   return (
     <View style={styles.container}>
       {places.length === 0 ? (

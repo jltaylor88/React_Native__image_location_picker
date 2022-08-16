@@ -50,9 +50,6 @@ export default function LocationPicker({
           PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
         );
 
-        console.log('FINE: ', fineGranted);
-        console.log('COARSE: ', coarseGranted);
-
         if (!fineGranted && !coarseGranted) {
           Alert.alert(
             "Cannot proceed without accessing the device's location.",
