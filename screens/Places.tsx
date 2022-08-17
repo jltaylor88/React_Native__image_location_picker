@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
 import React, {
   useCallback,
   useEffect,
@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LocalStorageKeys} from '../types';
 import {Colors} from '../constants/colors';
 import Place from '../models/Place';
+import PictureWidget from '../components/Screen Components/PictureWidget';
 
 export default function Places({
   navigation,
@@ -59,15 +60,27 @@ export default function Places({
     fetchItems();
   }, []);
 
-  return (
-    <View style={styles.container}>
-      {places.length === 0 ? (
-        <Text style={styles.noPlacesText}>
-          No places added yet. Please check back in later.
-        </Text>
-      ) : null}
-    </View>
-  );
+  const Body = useMemo(() => {
+    if (places.length === 0) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.noPlacesText}>
+            No places added yet. Please check back in later.
+          </Text>
+        </View>
+      );
+    } else {
+      return (
+        <FlatList
+          style={styles.list}
+          data={places}
+          renderItem={({item}) => <PictureWidget place={item} />}
+        />
+      );
+    }
+  }, [places]);
+
+  return <>{Body}</>;
 }
 
 const styles = StyleSheet.create({
@@ -84,5 +97,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  list: {
+    padding: 20,
   },
 });

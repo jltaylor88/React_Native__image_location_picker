@@ -8,11 +8,13 @@ import AddPlace, {IGeo} from './screens/AddPlace';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {enableLatestRenderer} from 'react-native-maps';
 import SetLocation from './screens/SetLocation';
+import EditPLace from './screens/EditPlace';
 
 export type RootStackParams = {
   Places: undefined;
   AddPlace: IGeo | undefined;
-  SetLocation: IGeo;
+  EditPlace: {id: string; newLocation?: IGeo};
+  SetLocation: {id?: string; location: IGeo};
 };
 
 const Stack = createNativeStackNavigator<RootStackParams>();
@@ -47,6 +49,13 @@ export default function App(): JSX.Element {
             name="AddPlace"
             component={AddPlace}
             options={{title: 'Add A New Place'}}
+          />
+          <Stack.Screen
+            name="EditPlace"
+            component={EditPLace}
+            options={{
+              title: 'Edit Place',
+            }}
           />
           <Stack.Screen
             name="SetLocation"

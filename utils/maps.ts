@@ -1,6 +1,5 @@
 import axios, {AxiosResponse} from 'axios';
-
-export const GOOGLE_MAP_KEY = '';
+import {GOOGLE_API_KEY} from '../keys';
 
 export const getStaticMapURL = (lat: number, lng: number): string => {
   return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(
@@ -8,7 +7,7 @@ export const getStaticMapURL = (lat: number, lng: number): string => {
   )}%2c%20${encodeURIComponent(lng)}&markers=color:redS%7C${encodeURIComponent(
     lat,
   )},${encodeURIComponent(lng)}&zoom=11&size=400x400&key=${encodeURIComponent(
-    GOOGLE_MAP_KEY,
+    GOOGLE_API_KEY,
   )}`;
 };
 
@@ -18,7 +17,7 @@ export const getAddressFromGeo = async (
 ): Promise<string> => {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${encodeURIComponent(
     lat,
-  )},${encodeURIComponent(lng)}&key=${encodeURIComponent(GOOGLE_MAP_KEY)}`;
+  )},${encodeURIComponent(lng)}&key=${encodeURIComponent(GOOGLE_API_KEY)}`;
 
   const response: AxiosResponse<{results: {formatted_address: string}[]}> =
     await axios.get(url);

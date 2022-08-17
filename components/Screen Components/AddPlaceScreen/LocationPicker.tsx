@@ -12,9 +12,11 @@ import {IGeo} from '../../../screens/AddPlace';
 interface ILocationPickerProps {
   onChange: (value: IGeo) => void;
   value?: IGeo;
+  id?: string;
 }
 
 export default function LocationPicker({
+  id,
   onChange,
   value,
 }: ILocationPickerProps): JSX.Element {
@@ -90,12 +92,15 @@ export default function LocationPicker({
     await handleLocateUser({
       onSuccess: loc => {
         navigate('SetLocation', {
-          lat: value?.lat ?? loc.coords.latitude,
-          lng: value?.lng ?? loc.coords.longitude,
+          id,
+          location: {
+            lat: value?.lat ?? loc.coords.latitude,
+            lng: value?.lng ?? loc.coords.longitude,
+          },
         });
       },
     });
-  }, [handleLocateUser, navigate, value?.lat, value?.lng]);
+  }, [handleLocateUser, id, navigate, value?.lat, value?.lng]);
 
   const imageURI: string | undefined = useMemo(() => {
     const {lat, lng} = value || {};

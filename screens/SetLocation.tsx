@@ -21,10 +21,11 @@ export default function SetLocation({
   route,
 }: NativeStackScreenProps<RootStackParams, 'SetLocation'>): JSX.Element {
   const [picked, setPicked] = useState<{lat: number; lng: number} | undefined>(
-    getInitialValues(route.params),
+    getInitialValues(route.params.location),
   );
 
-  const {lat, lng} = route.params;
+  const {lat, lng} = route.params.location;
+  const id = route.params.id;
 
   const {navigate} = navigation;
   const handleSaveClick = useCallback(async () => {
@@ -32,8 +33,15 @@ export default function SetLocation({
       Alert.alert('You need to select a location first');
       return;
     }
-    navigate('AddPlace', {lat: picked.lat, lng: picked.lng});
-  }, [navigate, picked]);
+    if (!id) {
+      navigate('AddPlace', {lat: picked.lat, lng: picked.lng});
+    } else {
+      navigate('EditPlace', {
+        id,
+        newLocation: {lat: picked.lat, lng: picked.lng},
+      });
+    }
+  }, [id, navigate, picked]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
