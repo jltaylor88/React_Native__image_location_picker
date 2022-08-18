@@ -12,10 +12,11 @@ import {useSelector} from 'react-redux';
 export default function Places({
   navigation,
 }: NativeStackScreenProps<RootStackParams, 'Places'>): JSX.Element {
+  // Load the existing places from Redux
   const places = useSelector(placesSelector);
 
+  // Setup the navigation to the add place screen in the header button
   const {navigate, setOptions} = useMemo(() => navigation, [navigation]);
-
   const handleAddPress = useCallback(() => {
     navigate('AddPlace');
   }, [navigate]);
@@ -34,6 +35,7 @@ export default function Places({
     });
   }, [handleAddPress, setOptions]);
 
+  // Conditionally render body based on whether any places have been saved
   const Body = useMemo(() => {
     if (places.length === 0) {
       return (

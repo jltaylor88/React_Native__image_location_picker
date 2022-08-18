@@ -4,7 +4,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Places from './screens/Places';
 import {Colors} from './constants/colors';
-import AddPlace, {IGeo} from './screens/AddPlace';
+import AddPlace from './screens/AddPlace';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {enableLatestRenderer} from 'react-native-maps';
 import SetLocation from './screens/SetLocation';
@@ -12,6 +12,7 @@ import EditPLace from './screens/EditPlace';
 import {Provider} from 'react-redux';
 import {persistor, store} from './redux/store';
 import {PersistGate} from 'redux-persist/integration/react';
+import {IGeo} from './types';
 
 export type RootStackParams = {
   Places: undefined;
