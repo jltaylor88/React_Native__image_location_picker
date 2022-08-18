@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: Colors.primary500,
     marginVertical: 10,
+    elevation: 10,
   },
   image: {
     flex: 1,
