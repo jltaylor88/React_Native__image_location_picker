@@ -9,6 +9,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {enableLatestRenderer} from 'react-native-maps';
 import SetLocation from './screens/SetLocation';
 import EditPLace from './screens/EditPlace';
+import {Provider} from 'react-redux';
+import {store} from './redux/store';
 
 export type RootStackParams = {
   Places: undefined;
@@ -23,7 +25,7 @@ enableLatestRenderer();
 
 export default function App(): JSX.Element {
   return (
-    <>
+    <Provider store={store}>
       <StatusBar
         backgroundColor={'transparent'}
         translucent
@@ -66,6 +68,6 @@ export default function App(): JSX.Element {
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </Provider>
   );
 }

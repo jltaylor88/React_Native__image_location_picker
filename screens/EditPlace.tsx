@@ -8,15 +8,17 @@ import Place from '../models/Place';
 import {LocalStorageKeys} from '../types';
 import {IGeo} from './AddPlace';
 
+export interface ILocationWithoutAddress {
+  id: string;
+  title: string;
+  location: IGeo;
+  imageUri: string;
+}
+
 export default function EditPLace({
   route,
 }: NativeStackScreenProps<RootStackParams, 'EditPlace'>): JSX.Element {
-  const [placeToUse, setPlaceToUse] = useState<{
-    id: string;
-    title: string;
-    location: IGeo;
-    imageUri: string;
-  }>();
+  const [placeToUse, setPlaceToUse] = useState<ILocationWithoutAddress>();
 
   const id = route.params.id;
   const newLocation = route.params.newLocation;
