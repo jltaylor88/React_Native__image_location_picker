@@ -1,11 +1,17 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
+import {useSelector} from 'react-redux';
 import {RootStackParams} from '../App';
 
 import PlaceForm from '../components/Screen Components/PlaceForm';
 import Place from '../models/Place';
-import {LocalStorageKeys} from '../types';
+import {
+  editPlace,
+  selectedPlaceSelector,
+  selectedTempPlaceSelector,
+  setTempPlace,
+} from '../redux/placesSlice';
+import {RootState, useAppDispatch} from '../redux/store';
 import {IGeo} from './AddPlace';
 
 export interface ILocationWithoutAddress {
@@ -18,77 +24,52 @@ export interface ILocationWithoutAddress {
 export default function EditPLace({
   route,
 }: NativeStackScreenProps<RootStackParams, 'EditPlace'>): JSX.Element {
-  const [placeToUse, setPlaceToUse] = useState<ILocationWithoutAddress>();
-
   const id = route.params.id;
+  const place = useSelector((state: RootState) =>
+    selectedPlaceSelector(state, id),
+  );
+  const tempPlace = useSelector(selectedTempPlaceSelector);
+  const dispatch = useAppDispatch();
+
   const newLocation = route.params.newLocation;
 
-  const getCurrent = useCallback(
-    async (placeId: string) => {
-      const currentItems = await AsyncStorage.getItem(LocalStorageKeys.Places);
-      const parsedCurrent: Place[] = currentItems
-        ? (JSON.parse(currentItems) as Place[])
-        : [];
-      const selected = parsedCurrent.find(el => el.id === placeId);
-      if (!selected) {
-        return;
-      }
-
-      const temp = {
-        id: selected.id,
-        title: selected.title,
-        location: selected.location,
-        imageUri: selected.imageUri,
-      };
-      if (!newLocation) {
-        return temp;
-      }
-
-      return {...temp, location: newLocation};
-    },
-    [newLocation],
-  );
-
-  const fetchAndSetState = useCallback(
-    async (placeId: string) => {
-      const s = await getCurrent(placeId);
-      if (!s) {
-        return;
-      }
-
-      setPlaceToUse(s);
-    },
-    [getCurrent],
-  );
-
-  useEffect(() => {
-    fetchAndSetState(id);
-  }, [fetchAndSetState, id]);
-
-  const handleFormSubmit = useCallback(async (place: Place) => {
-    const currentItems = await AsyncStorage.getItem(LocalStorageKeys.Places);
-    const parsedCurrent: Place[] = currentItems
-      ? (JSON.parse(currentItems) as Place[])
-      : [];
-    const idx = parsedCurrent.findIndex(val => val.id === place.id);
-
-    let updated: Place[];
-    if (idx >= 0) {
-      parsedCurrent[idx] = place;
-      updated = parsedCurrent;
-    } else {
-      updated = [...parsedCurrent, place];
+  const getCurrent = useCallback(() => {
+    if (!place) {
+      return;
     }
 
-    AsyncStorage.setItem(LocalStorageKeys.Places, JSON.stringify(updated));
-  }, []);
+    const temp = {
+      id: place.id,
+      title: place.title,
+      location: place.location,
+      imageUri: place.imageUri,
+    };
+    if (!newLocation) {
+      dispatch(setTempPlace(temp));
+    } else {
+      dispatch(setTempPlace({...temp, location: newLocation}));
+    }
+  }, [dispatch, newLocation, place]);
+
+  useEffect(() => {
+    getCurrent();
+  }, [getCurrent, id]);
+
+  const handleFormSubmit = useCallback(
+    async (passedPlace: Place) => {
+      // Need a serializable version of the Place class
+      const {id: placeId, title, location, imageUri} = passedPlace;
+      dispatch(editPlace({id: placeId, title, location, imageUri}));
+    },
+    [dispatch],
+  );
 
   return (
     <PlaceForm
-      initId={placeToUse?.id}
-      initTitle={placeToUse?.title}
-      initImageUri={placeToUse?.imageUri}
-      initLocation={placeToUse?.location}
+      initId={tempPlace?.id}
+      initTitle={tempPlace?.title}
+      initImageUri={tempPlace?.imageUri}
+      initLocation={tempPlace?.location}
       onSubmit={handleFormSubmit}
     />
   );

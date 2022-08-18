@@ -1,40 +1,71 @@
 import {createSelector, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import Place from '../models/Place';
+import {ILocation} from '../models/Place';
 import {ILocationWithoutAddress} from '../screens/EditPlace';
 import {RootState} from './store';
 
+export interface IPlaceObject {
+  id: string;
+  title: string;
+  imageUri: string;
+  location: ILocation;
+}
+
 export interface IPlacesState {
-  places: Place[];
-  selectedPlace?: ILocationWithoutAddress;
+  places: IPlaceObject[];
+  selectedTempPlace?: ILocationWithoutAddress;
 }
 
 const initialState: IPlacesState = {
   places: [],
-  selectedPlace: undefined,
+  selectedTempPlace: undefined,
 };
 
 export const placesSlice = createSlice({
   name: 'places',
   initialState,
   reducers: {
-    setPlaces: (state, action: PayloadAction<Place[]>) => {
+    addPlace: (state, action: PayloadAction<IPlaceObject>) => {
+      state.places.push(action.payload);
+    },
+    editPlace: (state, action: PayloadAction<IPlaceObject>) => {
+      const idx = state.places.findIndex(el => el.id === action.payload.id);
+      if (idx >= 0) {
+        state.places[idx] = action.payload;
+      }
+    },
+    setPlaces: (state, action: PayloadAction<IPlaceObject[]>) => {
       state.places = action.payload;
     },
-    getReducer: (state, action: PayloadAction<string>) => {
-      state.selectedPlace = state.places.find(p => p.id === action.payload);
+    setTempPlace: (state, action: PayloadAction<ILocationWithoutAddress>) => {
+      state.selectedTempPlace = action.payload;
     },
   },
 });
 
-export const {setPlaces} = placesSlice.actions;
+export const {addPlace, editPlace, setPlaces, setTempPlace} =
+  placesSlice.actions;
 
 export const placesSelector = createSelector(
   [(state: RootState) => state.placesStore.places],
   places => places,
 );
 
-export const selectedPLaceSelector = (state: RootState) =>
-  state.placesStore.selectedPlace;
+export const selectedTempPlaceSelector = (state: RootState) =>
+  state.placesStore.selectedTempPlace;
+
+export const selectedPlaceSelector = createSelector(
+  [
+    (state: RootState) => {
+      return state.placesStore.places;
+    },
+    (_: RootState, id: string) => {
+      return id;
+    },
+  ],
+  (places, id) => {
+    return places.find(p => p.id === id);
+  },
+);
 
 const placesReducer = placesSlice.reducer;
 export default placesReducer;

@@ -1,4 +1,4 @@
-import {StatusBar} from 'react-native';
+import {StatusBar, Text} from 'react-native';
 import React from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
@@ -10,7 +10,8 @@ import {enableLatestRenderer} from 'react-native-maps';
 import SetLocation from './screens/SetLocation';
 import EditPLace from './screens/EditPlace';
 import {Provider} from 'react-redux';
-import {store} from './redux/store';
+import {persistor, store} from './redux/store';
+import {PersistGate} from 'redux-persist/integration/react';
 
 export type RootStackParams = {
   Places: undefined;
@@ -26,48 +27,50 @@ enableLatestRenderer();
 export default function App(): JSX.Element {
   return (
     <Provider store={store}>
-      <StatusBar
-        backgroundColor={'transparent'}
-        translucent
-        barStyle={'dark-content'}
-      />
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: Colors.primary500,
-            },
-            contentStyle: {
-              backgroundColor: Colors.gray700,
-            },
-          }}
-          initialRouteName="Places">
-          <Stack.Screen
-            name="Places"
-            component={Places}
-            options={{title: 'Your Favourite Places'}}
-          />
-          <Stack.Screen
-            name="AddPlace"
-            component={AddPlace}
-            options={{title: 'Add A New Place'}}
-          />
-          <Stack.Screen
-            name="EditPlace"
-            component={EditPLace}
-            options={{
-              title: 'Edit Place',
+      <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
+        <StatusBar
+          backgroundColor={'transparent'}
+          translucent
+          barStyle={'dark-content'}
+        />
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: Colors.primary500,
+              },
+              contentStyle: {
+                backgroundColor: Colors.gray700,
+              },
             }}
-          />
-          <Stack.Screen
-            name="SetLocation"
-            component={SetLocation}
-            options={{
-              title: 'Map',
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+            initialRouteName="Places">
+            <Stack.Screen
+              name="Places"
+              component={Places}
+              options={{title: 'Your Favourite Places'}}
+            />
+            <Stack.Screen
+              name="AddPlace"
+              component={AddPlace}
+              options={{title: 'Add A New Place'}}
+            />
+            <Stack.Screen
+              name="EditPlace"
+              component={EditPLace}
+              options={{
+                title: 'Edit Place',
+              }}
+            />
+            <Stack.Screen
+              name="SetLocation"
+              component={SetLocation}
+              options={{
+                title: 'Map',
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PersistGate>
     </Provider>
   );
 }

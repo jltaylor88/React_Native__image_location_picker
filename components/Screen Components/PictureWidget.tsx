@@ -51,9 +51,10 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   header: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
     color: Colors.gray700,
+    marginBottom: 5,
   },
   address: {
     color: Colors.gray700,

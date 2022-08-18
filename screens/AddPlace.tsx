@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack/lib/typescript/src/types';
 import React, {useCallback, useEffect, useState} from 'react';
 import {RootStackParams} from '../App';
 import PlaceForm from '../components/Screen Components/PlaceForm';
 import Place from '../models/Place';
-import {LocalStorageKeys} from '../types';
+import {addPlace} from '../redux/placesSlice';
+import {useAppDispatch} from '../redux/store';
 
 export interface IGeo {
   lat: number;
@@ -25,6 +25,8 @@ const getInit = (location: Partial<IGeo>) => {
 export default function AddPlace({
   route,
 }: NativeStackScreenProps<RootStackParams, 'AddPlace'>): JSX.Element {
+  const dispatch = useAppDispatch();
+
   const lat = route.params?.lat;
   const lng = route.params?.lng;
   const [location, setLocation] = useState<IGeo | undefined>(
@@ -34,14 +36,13 @@ export default function AddPlace({
     setLocation(getInit({lat, lng}));
   }, [lat, lng]);
 
-  const handleFormSubmit = useCallback(async (place: Place) => {
-    const currentItems = await AsyncStorage.getItem(LocalStorageKeys.Places);
-    const parsedCurrent = currentItems
-      ? (JSON.parse(currentItems) as unknown[])
-      : [];
-    const updated = [...parsedCurrent, place];
-    AsyncStorage.setItem(LocalStorageKeys.Places, JSON.stringify(updated));
-  }, []);
+  const handleFormSubmit = useCallback(
+    async (place: Place) => {
+      const {id, title, imageUri, location: placeLoc} = place;
+      dispatch(addPlace({id, title, imageUri, location: placeLoc}));
+    },
+    [dispatch],
+  );
 
   return <PlaceForm initLocation={location} onSubmit={handleFormSubmit} />;
 }
