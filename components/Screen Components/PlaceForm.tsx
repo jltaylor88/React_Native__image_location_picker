@@ -4,20 +4,14 @@ import {Alert, ScrollView, StyleSheet, View} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {RootStackParams} from '../../App';
 import Place from '../../models/Place';
-import {IGeo} from '../../screens/AddPlace';
+import {IGeo} from '../../types';
+import getGeoState from '../../utils/getGeoState';
+
 import {getAddressFromGeo} from '../../utils/maps';
 import CTAButton from '../ui/CTAButton';
 import MyTextInput from '../ui/MyTextInput';
 import ImagePicker from './AddPlaceScreen/ImagePicker';
 import LocationPicker from './AddPlaceScreen/LocationPicker';
-
-const getInitialLocation = (params?: IGeo) => {
-  if (!params) {
-    return undefined;
-  } else {
-    return {lat: params.lat, lng: params.lng};
-  }
-};
 
 export interface IPlaceFormProps {
   initTitle?: string;
@@ -34,27 +28,25 @@ export default function PlaceForm({
   initId,
   onSubmit,
 }: IPlaceFormProps): JSX.Element {
+  // Manage title state
   const [title, setTitle] = useState<string>(initTitle || '');
   useEffect(() => setTitle(initTitle || ''), [initTitle]);
-  const [location, setLocation] = useState<IGeo | undefined>(
-    getInitialLocation(initLocation),
-  );
-  useEffect(
-    () => setLocation(getInitialLocation(initLocation)),
-    [initLocation],
-  );
-
-  const [imageUri, setImageUri] = useState<string>(initImageUri || '');
-  useEffect(() => setImageUri(initImageUri || ''), [initImageUri]);
-
   const handleChangeText = useCallback((value: string) => {
     setTitle(value);
   }, []);
 
-  const handleOnChange = useCallback((selectedLocation: IGeo) => {
+  // Manage the geolocation state
+  const [location, setLocation] = useState<IGeo | undefined>(
+    getGeoState(initLocation),
+  );
+  useEffect(() => setLocation(getGeoState(initLocation)), [initLocation]);
+  const handleLocationChange = useCallback((selectedLocation: IGeo) => {
     setLocation(selectedLocation);
   }, []);
 
+  // Manage the image URI state
+  const [imageUri, setImageUri] = useState<string>(initImageUri || '');
+  useEffect(() => setImageUri(initImageUri || ''), [initImageUri]);
   const handleImageSelect = useCallback((uri: string) => setImageUri(uri), []);
 
   const {navigate} = useNavigation<NavigationProp<RootStackParams>>();
@@ -67,8 +59,10 @@ export default function PlaceForm({
       return;
     }
     try {
+      // Get the address associated with the geolocation
       const address = await getAddressFromGeo(location.lat, location.lng);
 
+      // Create a new place from state values, using a passed ID if there is one (such as on edit screen)
       const place = new Place(
         initId || `${new Date().toISOString()}_${Math.random() * 1000}`,
         title,
@@ -78,6 +72,7 @@ export default function PlaceForm({
 
       onSubmit(place);
 
+      // Navigate to the place list screen if successful
       navigate('Places');
     } catch (error) {
       Alert.alert('There was an error saving your image.', 'Please try again');
@@ -99,7 +94,7 @@ export default function PlaceForm({
         <LocationPicker
           id={initId}
           value={location}
-          onChange={handleOnChange}
+          onChange={handleLocationChange}
         />
         <CTAButton buttonText="Submit" onPress={handleSubmit} />
       </View>

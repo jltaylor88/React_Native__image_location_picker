@@ -30,6 +30,7 @@ export default function ImagePicker({
         PermissionsAndroid.PERMISSIONS.CAMERA,
       );
 
+      // This permission is required so show an alert if not granted and return early
       if (!canCamera) {
         Alert.alert(
           "Cannot proceed without access to the device's camera.",
@@ -38,6 +39,7 @@ export default function ImagePicker({
         return;
       }
 
+      // Ask for permission to store photos in file system
       await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
         {
@@ -56,7 +58,6 @@ export default function ImagePicker({
       //  Launch the camera
       const result = await launchCamera({
         mediaType: 'photo',
-
         quality: 0.9,
         saveToPhotos: canSave,
       });
@@ -73,6 +74,7 @@ export default function ImagePicker({
         );
         return;
       }
+      // Handle okay of image
       onImageOk(uri);
     } catch (error) {
       console.error(error);

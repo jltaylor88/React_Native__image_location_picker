@@ -7,7 +7,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {getStaticMapURL} from '../../../utils/maps';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParams} from '../../../App';
-import {IGeo} from '../../../screens/AddPlace';
+import {IGeo} from '../../../types';
 
 interface ILocationPickerProps {
   onChange: (value: IGeo) => void;

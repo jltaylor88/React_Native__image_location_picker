@@ -5,22 +5,8 @@ import PlaceForm from '../components/Screen Components/PlaceForm';
 import Place from '../models/Place';
 import {addPlace} from '../redux/placesSlice';
 import {useAppDispatch} from '../redux/store';
-
-export interface IGeo {
-  lat: number;
-  lng: number;
-}
-
-const getInit = (location: Partial<IGeo>) => {
-  if (!location.lat || !location.lng) {
-    return undefined;
-  } else {
-    return {
-      lat: location.lat,
-      lng: location.lng,
-    };
-  }
-};
+import {IGeo} from '../types';
+import getGeoState from '../utils/getGeoState';
 
 export default function AddPlace({
   route,
@@ -30,10 +16,10 @@ export default function AddPlace({
   const lat = route.params?.lat;
   const lng = route.params?.lng;
   const [location, setLocation] = useState<IGeo | undefined>(
-    getInit({lat, lng}),
+    getGeoState({lat, lng}),
   );
   useEffect(() => {
-    setLocation(getInit({lat, lng}));
+    setLocation(getGeoState({lat, lng}));
   }, [lat, lng]);
 
   const handleFormSubmit = useCallback(
