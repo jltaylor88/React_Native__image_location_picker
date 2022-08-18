@@ -13,6 +13,9 @@ export default function AddPlace({
 }: NativeStackScreenProps<RootStackParams, 'AddPlace'>): JSX.Element {
   const dispatch = useAppDispatch();
 
+  // Manage the Geolocation state initial values from route object
+  // Will be undefined when first navigate to the screen and then
+  // defined when navigate to this screen from the map screen if saved.
   const lat = route.params?.lat;
   const lng = route.params?.lng;
   const [location, setLocation] = useState<IGeo | undefined>(
@@ -22,6 +25,7 @@ export default function AddPlace({
     setLocation(getGeoState({lat, lng}));
   }, [lat, lng]);
 
+  // Add to Redux store on submit
   const handleFormSubmit = useCallback(
     async (place: Place) => {
       const {id, title, imageUri, location: placeLoc} = place;
