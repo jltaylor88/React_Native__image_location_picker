@@ -6,27 +6,28 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParams} from '../App';
 
 import IconButton from '../components/ui/IconButton';
-import {IGeo} from './AddPlace';
-
-const getInitialValues = (params?: IGeo) => {
-  if (!params) {
-    return;
-  }
-
-  return {lat: params.lat, lng: params.lng};
-};
+import getGeoState from '../utils/getGeoState';
 
 export default function SetLocation({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParams, 'SetLocation'>): JSX.Element {
+  // Manage the chosen location of the marker. Set to center point at first
   const [picked, setPicked] = useState<{lat: number; lng: number} | undefined>(
-    getInitialValues(route.params.location),
+    getGeoState(route.params.location),
   );
+  const handleOnPress = useCallback((e: MapPressEvent) => {
+    const selLat = e.nativeEvent.coordinate.latitude;
+    const selLng = e.nativeEvent.coordinate.longitude;
 
+    setPicked({lat: selLat, lng: selLng});
+  }, []);
+
+  // These values are used to initially center the map
   const {lat, lng} = route.params.location;
   const id = route.params.id;
 
+  // Setup the navigation logic for on save
   const {navigate} = navigation;
   const handleSaveClick = useCallback(async () => {
     if (!picked) {
@@ -56,14 +57,7 @@ export default function SetLocation({
     });
   }, [handleSaveClick, navigation]);
 
-  const handleOnPress = useCallback((e: MapPressEvent) => {
-    const selLat = e.nativeEvent.coordinate.latitude;
-    const selLng = e.nativeEvent.coordinate.longitude;
-
-    setPicked({lat: selLat, lng: selLng});
-  }, []);
-
-  const body = useMemo(() => {
+  const Body = useMemo(() => {
     return (
       <MapView
         style={styles.map}
@@ -86,7 +80,7 @@ export default function SetLocation({
     );
   }, [handleOnPress, lat, lng, picked]);
 
-  return <>{body}</>;
+  return <>{Body}</>;
 }
 
 const styles = StyleSheet.create({
