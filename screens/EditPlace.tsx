@@ -7,7 +7,7 @@ import PlaceForm from '../components/Screen Components/PlaceForm';
 import Place from '../models/Place';
 import {
   editPlace,
-  selectedPlaceSelector,
+  selectedPlaceByIDSelector,
   selectedTempPlaceSelector,
   setTempPlace,
 } from '../redux/placesSlice';
@@ -27,7 +27,7 @@ export default function EditPLace({
   // Get the value of this place in Redux, from the last time it was saved
   const id = route.params.id;
   const place = useSelector((state: RootState) =>
-    selectedPlaceSelector(state, id),
+    selectedPlaceByIDSelector(state, id),
   );
 
   // Get the temporary value of the place from Redux state, that is independent of address

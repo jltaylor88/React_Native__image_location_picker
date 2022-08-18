@@ -5,15 +5,14 @@ import IconButton from '../components/ui/IconButton';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Colors} from '../constants/colors';
 import PictureWidget from '../components/Screen Components/PictureWidget';
-
-import {placesSelector} from '../redux/placesSlice';
 import {useSelector} from 'react-redux';
+import {allPlacesSelector} from '../redux/placesSlice';
 
 export default function Places({
   navigation,
 }: NativeStackScreenProps<RootStackParams, 'Places'>): JSX.Element {
   // Load the existing places from Redux
-  const places = useSelector(placesSelector);
+  const places = useSelector(allPlacesSelector);
 
   // Setup the navigation to the add place screen in the header button
   const {navigate, setOptions} = useMemo(() => navigation, [navigation]);
