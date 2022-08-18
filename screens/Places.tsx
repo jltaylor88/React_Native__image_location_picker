@@ -37,7 +37,8 @@ export default function Places({
 
   // Conditionally render body based on whether any places have been saved
   const Body = useMemo(() => {
-    if (places.length === 0) {
+    const l = places.length;
+    if (l === 0) {
       return (
         <View style={styles.container}>
           <Text style={styles.noPlacesText}>
@@ -50,7 +51,16 @@ export default function Places({
         <FlatList
           style={styles.list}
           data={places}
-          renderItem={({item}) => <PictureWidget place={item} />}
+          renderItem={({item, index}) => {
+            // Add extra padding at start and end of list
+            const style =
+              index === 0
+                ? styles.first
+                : index === l - 1
+                ? styles.last
+                : undefined;
+            return <PictureWidget style={style} place={item} />;
+          }}
         />
       );
     }
@@ -75,6 +85,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   list: {
-    padding: 20,
+    paddingHorizontal: 20,
   },
+  first: {marginTop: 20},
+  last: {marginBottom: 20},
 });

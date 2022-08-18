@@ -1,4 +1,12 @@
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 import React, {useCallback} from 'react';
 import {Colors} from '../../constants/colors';
 import Place from '../../models/Place';
@@ -7,10 +15,12 @@ import {RootStackParams} from '../../App';
 
 export interface IPictureWidgetProps {
   place: Place;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function PictureWidget({
   place,
+  style,
 }: IPictureWidgetProps): JSX.Element {
   const {navigate} = useNavigation<NavigationProp<RootStackParams>>();
 
@@ -21,7 +31,11 @@ export default function PictureWidget({
 
   return (
     <Pressable
-      style={({pressed}) => [styles.container, pressed && styles.pressed]}
+      style={({pressed}) => [
+        style,
+        styles.container,
+        pressed && styles.pressed,
+      ]}
       android_ripple={{color: '#ccc'}}
       onPress={handleOnPress}>
       <Image style={styles.image} source={{uri: place.imageUri}} />
